@@ -1,0 +1,129 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>NOALZ WIFI RADAR V1</title>
+<style>
+:root{color-scheme:dark;--bg:#05070d;--c:#22e4ff;--g:#4dffa6;--v:#8b5cff;--r:#ff5d8f;--y:#ffd166;--t:#e8f4ff;--m:#8aa4bd;--glass:rgba(255,255,255,.055);--bd:rgba(255,255,255,.1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--t);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:radial-gradient(60% 40% at 15% 0%,rgba(34,228,255,.18),transparent),radial-gradient(50% 40% at 100% 20%,rgba(139,92,255,.18),transparent),var(--bg);display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 0}
+.bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+.brand b{font-size:17px;letter-spacing:.5px;background:linear-gradient(90deg,var(--c),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{display:block;color:var(--m);font-size:10px;letter-spacing:2px}
+.chip{display:inline-flex;gap:6px;align-items:center;padding:5px 11px;border-radius:99px;background:var(--glass);border:1px solid var(--bd);font-size:12px;color:var(--g)}
+.chip:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.chip.warn{color:var(--y)}.chip.bad{color:var(--r)}.chip.cy{color:var(--c)}
+#demo{margin:0 16px 8px;padding:9px 12px;border-radius:12px;background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.35);color:var(--y);font-size:12px}
+main{flex:1;overflow-y:auto;padding:4px 16px 96px}section{display:none;animation:in .3s}section.on{display:block}@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.glass{background:var(--glass);border:1px solid var(--bd);border-radius:20px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.hero{padding:12px;position:relative}
+canvas{width:100%;aspect-ratio:1;display:block;border-radius:16px;background:radial-gradient(circle,rgba(34,228,255,.1),transparent 70%)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.stat{padding:12px;text-align:center}.stat b{font-size:24px;display:block}.stat span{font-size:11px;color:var(--m)}
+.cta{width:100%;border:0;border-radius:16px;padding:15px;font:inherit;font-weight:700;font-size:16px;color:#02121a;background:linear-gradient(90deg,var(--c),var(--g));box-shadow:0 8px 30px rgba(34,228,255,.35);margin:2px 0 6px}
+.cta:active{transform:scale(.98)}.cta[disabled]{opacity:.6}
+.btn{border:1px solid var(--bd);background:var(--glass);color:var(--t);border-radius:12px;padding:10px 14px;font:inherit;margin:4px 6px 4px 0}
+.btn.r{color:var(--r);border-color:rgba(255,93,143,.4)}
+.msg{color:var(--y);font-size:13px;min-height:18px;margin:4px 2px}
+h3{margin:18px 2px 8px;font-size:13px;color:var(--m);letter-spacing:1.5px;font-weight:600}
+.dev{display:flex;gap:12px;padding:12px;margin:10px 0}
+.av{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.06)}
+.dev .t{display:flex;justify-content:space-between;align-items:center;gap:8px}.dev b{font-size:16px}
+.dev small{display:block;color:var(--m);font-size:12px}
+.tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.on1{color:var(--g)}.new1{color:var(--c)}.lost1{color:var(--r)}.warn1{color:var(--y)}.demo1{color:var(--v)}
+.bars{display:inline-flex;gap:2px;align-items:flex-end;height:14px;vertical-align:middle;margin-right:6px}.bars i{width:3px;background:var(--bd);border-radius:2px}.bars i.f{background:var(--g)}
+.dock{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;gap:4px;overflow-x:auto;padding:6px;background:rgba(10,16,28,.8);border:1px solid var(--bd);border-radius:22px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:5}
+.dock button{flex:none;min-width:62px;background:none;border:0;color:var(--m);font:inherit;font-size:10px;padding:7px 6px;border-radius:16px}
+.dock button i{display:block;font-style:normal;font-size:19px;line-height:1.1}
+.dock button.on{color:#02121a;background:linear-gradient(135deg,var(--c),var(--g))}
+#mi{margin-top:6px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px}
+#splash{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:opacity .6s;text-align:center;padding:20px}
+#splash h2{margin:14px 0 0;background:linear-gradient(90deg,var(--c),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px}
+#splash p{margin:0;color:var(--m);font-size:12px}
+.ring{width:96px;height:96px;border-radius:50%;background:conic-gradient(from 0deg,transparent 70%,var(--c));mask:radial-gradient(circle,transparent 40%,#000 41%);-webkit-mask:radial-gradient(circle,transparent 40%,#000 41%);animation:sp 1.2s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+select,input[type=checkbox]{accent-color:var(--c)}select{background:var(--glass);color:var(--t);border:1px solid var(--bd);border-radius:10px;padding:8px}
+</style></head><body>
+<div id="splash"><div class="ring"></div><h2>NOALZ WIFI RADAR V1</h2><p>DEVELOPED BY NOALZ</p><p>SEE YOUR NETWORK. VISUALIZE YOUR CONNECTION.</p></div>
+<div class="bar"><div class="brand"><b>NOALZ WIFI RADAR</b><small>V1 · BY NOALZ</small></div><span class="chip" id="st">...</span></div>
+<div id="demo" hidden></div>
+<main>
+<section id="v0"><div class="glass hero"><canvas id="rc"></canvas></div>
+<div class="stats"><div class="glass stat"><b id="s1">0</b><span>ONLINE</span></div><div class="glass stat"><b id="s2">0</b><span>BARU</span></div><div class="glass stat"><b id="s3">0</b><span>HILANG</span></div></div>
+<button class="cta" id="go">START SCAN</button><div id="msg" class="msg"></div>
+<small style="color:var(--m)">Posisi titik hanya visualisasi jaringan, bukan lokasi fisik perangkat.</small><h3>PERANGKAT</h3><div id="l0"></div></section>
+<section id="v1"><h3>DEVICE DETECTOR</h3><div id="l1"></div></section>
+<section id="v2"><button class="cta" onclick="scanWifi()">SCAN WIFI</button><div id="msg2" class="msg"></div><div id="l2"></div></section>
+<section id="v3"><h3>HOTSPOT USERS</h3><div id="h3" class="msg"></div><div id="l3"></div></section>
+<section id="v4"><div class="glass hero"><canvas id="mc"></canvas></div><div style="margin-top:10px"><button class="btn" onclick="Z*=1.3">＋ Zoom</button><button class="btn" onclick="Z/=1.3">－ Zoom</button><button class="btn" onclick="show(0)">◎ Radar</button></div><div id="mi"></div></section>
+<section id="v5"><h3>LIVE MONITOR</h3><div id="l5"></div></section>
+<section id="v6"><button class="btn r" onclick="clearHist()">Hapus riwayat</button><div id="l6"></div></section>
+<section id="v7"><div class="glass row"><div>Live Monitor otomatis<br><small style="color:var(--m)">Scan berulang</small></div><div><input type="checkbox" id="auto"> <select id="iv"><option value="15">15 dtk</option><option value="30" selected>30 dtk</option><option value="60">60 dtk</option></select></div></div>
+<div class="glass row" id="dm" hidden><div>Mode DEMO<br><small style="color:var(--m)">Data contoh, bukan hasil scan nyata</small></div><input type="checkbox" id="demoT" checked></div>
+<div class="glass row"><small style="color:var(--m)">Hanya memindai jaringan milik Anda. Nama host bukan nama pemilik. MAC sering tidak tersedia di Android 10+. Client isolation dapat menyembunyikan perangkat.</small></div></section>
+</main>
+<nav class="dock" id="nav"></nav>
+<script>
+const $=s=>document.querySelector(s),NAMES=[['◎','Radar'],['▤','Device'],['⌁','WiFi'],['⚑','Hotspot'],['▦','Map'],['◉','Live'],['⟲','Riwayat'],['⚙','Atur']];
+const S={devs:{},wifi:[],net:{},scans:0,busy:false,view:0,timer:null},COL=['#22e4ff','#4dffa6','#8b5cff','#ff5dc8','#ffd166','#ff8a4d'];
+const A=window.Android,H=s=>[...s].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7),fmt=t=>new Date(t).toLocaleString('id-ID'),esc=s=>String(s).replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
+const demo=()=>!A&&$('#demoT').checked;let Z=1,hist=[];try{hist=JSON.parse(localStorage.getItem('nwr_hist')||'[]')}catch(e){}
+$('#nav').innerHTML=NAMES.map((n,i)=>`<button onclick="show(${i})"><i>${n[0]}</i>${n[1]}</button>`).join('');
+if(!A)$('#dm').hidden=false;
+function show(i){S.view=i;document.querySelectorAll('section').forEach((s,j)=>s.classList.toggle('on',i==j));document.querySelectorAll('.dock button').forEach((b,j)=>b.classList.toggle('on',i==j));sz();render()}
+setTimeout(()=>{$('#splash').style.opacity=0;setTimeout(()=>$('#splash').remove(),700)},1600);
+const stick=(v,c,s=34)=>`<svg width="${s}" height="${s}" viewBox="0 0 40 40" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"><circle cx="20" cy="9" r="5"/><path d="M20 14v13M20 18l-8 6M20 18l8 6M20 27l-7 11M20 27l7 11"/>${['<path d="M14 4h12"/>','<path d="M15 6l5-5 5 5"/>','<path d="M12 9h-3M28 9h3"/>','<path d="M12 24l-3-6"/>','<path d="M28 24l5-3"/>','<path d="M15 10h10"/>'][v%6]}</svg>`;
+function dstick(g,x,y,s,c,v){g.strokeStyle=c;g.lineWidth=2;g.lineCap='round';g.beginPath();g.arc(x,y-s*.6,s*.2,0,7);g.moveTo(x,y-s*.4);g.lineTo(x,y+s*.1);g.moveTo(x-s*.3,y-s*.2);g.lineTo(x+s*.3,y-s*.2);g.moveTo(x,y+s*.1);g.lineTo(x-s*.25,y+s*.5);g.moveTo(x,y+s*.1);g.lineTo(x+s*.25,y+s*.5);if(v%2){g.moveTo(x-s*.25,y-s*.85);g.lineTo(x+s*.25,y-s*.85)}g.stroke()}
+const list=()=>Object.values(S.devs).sort((a,b)=>H(a.ip)-H(b.ip)),meta=d=>({c:COL[H(d.ip)%6],v:H(d.ip)>>3});
+function status(d){if(d.self)return['ANDA','new1'];if(d.miss==0)return Date.now()-d.first<12e4&&S.scans>1?['BARU','new1']:['ONLINE','on1'];return d.miss>=3?['TIDAK TERJANGKAU','lost1']:['TIDAK TERLIHAT '+d.miss+'x','warn1']}
+const type=d=>d.self?'Perangkat ini':d.ip==S.net.gw?'Gateway/Router':'Tidak dikenali';
+const bars=r=>{const n=r>-55?4:r>-67?3:r>-78?2:1;return`<span class="bars">${[1,2,3,4].map(i=>`<i class="${i<=n?'f':''}" style="height:${i*3+2}px"></i>`).join('')}</span>`};
+function card(d){const m=meta(d),s=status(d);return`<div class="glass dev" onclick="pick('${d.ip}')"><div class="av">${stick(m.v,m.c)}</div><div style="flex:1;min-width:0"><div class="t"><b>${d.ip}</b><span class="tag ${s[1]}">${s[0]}</span></div>
+<small>Host (bukan nama pemilik): ${d.host?esc(d.host):'tidak tersedia'}</small><small>MAC: ${d.mac||'tidak tersedia'} · ${type(d)}</small>
+<small>Sinyal: ${d.rssi?bars(d.rssi)+d.rssi+' dBm':'tidak tersedia'}${d.demo?' <span class="tag demo1">DEMO</span>':''}</small><small>Pertama: ${fmt(d.first)} · Terakhir: ${fmt(d.last)}</small></div></div>`}
+function render(){const L=list(),on=L.filter(d=>d.miss==0&&!d.self).length,nw=L.filter(d=>status(d)[0]=='BARU').length,lost=L.filter(d=>d.miss>=3).length,n=S.net;
+const isD=demo();$('#demo').hidden=!isD;$('#demo').textContent='MODE DEMO: data di bawah adalah contoh, bukan hasil scan nyata. Pasang APK Android untuk scan sungguhan.';
+const c=$('#st');c.className='chip '+(A?(n.enabled===false?'bad':'cy'):'warn');c.textContent=A?(n.enabled===false?'WiFi mati':(n.ssid||'WiFi')+(n.rssi?' · '+n.rssi+' dBm':'')):(isD?'DEMO':'Bukan Android');
+$('#s1').textContent=on;$('#s2').textContent=nw;$('#s3').textContent=lost;
+const e='<div class="msg">Belum ada hasil. Tekan START SCAN.</div>';$('#l0').innerHTML=$('#l1').innerHTML=L.length?L.map(card).join(''):e;
+$('#l2').innerHTML=S.wifi.map(w=>`<div class="glass dev"><div class="av" style="font-size:20px">${bars(w.rssi)}</div><div style="flex:1"><div class="t"><b>${esc(w.ssid||'(tersembunyi)')}</b><span class="tag on1">${w.type}</span></div><small>BSSID ${w.bssid||'-'}</small><small>${w.rssi} dBm · ${w.freq} MHz (${w.freq>4900?'5/6 GHz':'2.4 GHz'})${w.demo?' · DEMO':''}</small></div></div>`).join('')||'<div class="msg">Belum ada scan WiFi.</div>';
+const hs=n.mode=='hotspot';$('#h3').textContent=hs?'Perangkat yang terhubung ke hotspot Anda:':'Hotspot tidak aktif. Aktifkan hotspot HP, lalu START SCAN.';$('#l3').innerHTML=hs?L.filter(d=>!d.self).map(card).join(''):'';
+$('#l5').innerHTML=`<div class="glass row">Scan ke-${S.scans}<span class="chip ${$('#auto').checked?'':'warn'}">Auto ${$('#auto').checked?'ON':'OFF'}</span></div>`+L.slice().sort((a,b)=>b.last-a.last).map(d=>`<div class="glass row"><b>${d.ip}</b><span class="tag ${status(d)[1]}">${status(d)[0]}</span><small style="color:var(--m)">${fmt(d.last)}</small></div>`).join('');
+$('#l6').innerHTML=hist.map(h=>`<div class="glass row" style="display:block"><b>${fmt(h.t)}</b><small style="display:block;color:var(--m)">${h.net} · ${h.n} perangkat</small><small style="display:block;color:var(--m)">${h.d.join(', ')}</small></div>`).join('')||'<div class="msg">Riwayat kosong.</div>'}
+function pick(ip){const d=S.devs[ip];if(d)$('#mi').innerHTML=card(d)}
+function apply(d){S.busy=false;$('#go').disabled=false;$('#go').textContent='START SCAN';if(d.error){$('#msg').textContent=d.error=='no_net'?'Tidak terhubung ke WiFi/hotspot.':'Scan gagal.';return}
+$('#msg').textContent=d.macAvailable?'':'MAC tidak tersedia (dibatasi Android).';S.net.mode=d.mode;const now=Date.now(),seen=new Set();d.list.push({ip:d.self,self:1});
+d.list.forEach(x=>{seen.add(x.ip);const o=S.devs[x.ip]||(S.devs[x.ip]={ip:x.ip,first:now});Object.assign(o,x,{last:now,miss:0})});
+for(const k in S.devs)if(!seen.has(k))S.devs[k].miss++;S.scans++;
+hist.unshift({t:now,net:(d.demo?'DEMO ':'')+(S.net.ssid||S.net.iface||'-')+' ('+d.mode+')',n:d.list.length-1,d:d.list.filter(x=>!x.self).map(x=>x.ip)});hist=hist.slice(0,50);try{localStorage.setItem('nwr_hist',JSON.stringify(hist))}catch(e){}render()}
+window.onNative=(t,j)=>{const d=JSON.parse(j);
+if(t=='perm'){if(d.ok)scanAll();else $('#msg').textContent='Izin ditolak. Pemindaian dibatasi.'}
+if(t=='info'){S.net=d;render()}
+if(t=='wifi'){if(d.error){$('#msg2').textContent=d.error=='wifi_off'?'WiFi mati.':'Izin diperlukan.';return}S.wifi=d.list.sort((a,b)=>b.rssi-a.rssi);$('#msg2').textContent=d.throttled?'Android membatasi frekuensi scan; menampilkan hasil terakhir.':'';render()}
+if(t=='devices')apply(d)};
+function demoData(){const n=[['192.168.1.1','router.lan','Gateway'],['192.168.1.12','',''],['192.168.1.23','laptop-a',''],['192.168.1.31','',''],['192.168.1.44','tv-ruang',''],['192.168.1.57','','']];
+const list=n.filter(()=>Math.random()>.15).map(x=>({ip:x[0],host:x[1]||undefined,rssi:-45-Math.floor(Math.random()*35),demo:1}));
+S.net={enabled:true,ssid:'DEMO-WiFi',rssi:-52,gw:'192.168.1.1',mode:'wifi'};
+S.wifi=[['DEMO-WiFi','WPA2',2437,-52],['DEMO-Cafe','OPEN',5180,-71],['DEMO-Tetangga','WPA3',2462,-80],['DEMO-Office','WPA2',5745,-66]].map(w=>({ssid:w[0],bssid:'DE:MO:'+(H(w[0])%99).toString(16).padStart(2,'0')+':00:00:01',type:w[1],freq:w[2],rssi:w[3],demo:1}));
+setTimeout(()=>apply({list,self:'192.168.1.5',mode:'wifi',demo:1,macAvailable:false}),900)}
+function scanWifi(){if(A)A.scanWifi();else if(demo())demoData();else $('#msg2').textContent='Jalankan di aplikasi Android.'}
+function scanAll(){if(S.busy)return;S.busy=true;$('#go').disabled=true;$('#go').textContent='SCANNING...';$('#msg').textContent='';if(A){A.wifiInfo();A.scanWifi();A.scanDevices()}else demoData()}
+$('#go').onclick=()=>{if(!A){if(demo())scanAll();else $('#msg').textContent='Scan nyata hanya di aplikasi Android. Aktifkan Mode DEMO di Atur untuk melihat contoh.';return}
+if(!A.hasPerms()){if(confirm('Android mewajibkan izin Lokasi/Perangkat WiFi Sekitar untuk memindai WiFi. Data tidak dikirim ke mana pun. Lanjutkan?'))A.requestPerms();return}scanAll()};
+function clearHist(){if(confirm('Hapus semua riwayat?')){hist=[];try{localStorage.removeItem('nwr_hist')}catch(e){}render()}}
+function auto(){clearInterval(S.timer);if($('#auto').checked)S.timer=setInterval(()=>{if(!A||A.hasPerms())scanAll()},$('#iv').value*1000);render()}
+$('#auto').onchange=$('#iv').onchange=auto;$('#demoT').onchange=render;
+function pos(d,R){const h=H(d.ip),a=(h%360)*Math.PI/180,r=.3+((h>>9)%60)/100*.65;return[Math.cos(a)*r*R,Math.sin(a)*r*R]}
+function sz(){['rc','mc'].forEach(i=>{const c=document.getElementById(i),w=Math.round(c.clientWidth*devicePixelRatio);if(w&&c.width!=w)c.width=c.height=w})}addEventListener('resize',sz);
+function frame(t){requestAnimationFrame(frame);const id=S.view==0?'rc':S.view==4?'mc':null;if(!id)return;const c=document.getElementById(id),g=c.getContext('2d'),W=c.width,R=W/2*.92*(id=='mc'?Z:1);if(!W)return;
+g.clearRect(0,0,W,W);g.save();g.translate(W/2,W/2);g.lineWidth=1;
+if(id=='rc'){g.strokeStyle='rgba(34,228,255,.25)';for(let i=1;i<=4;i++){g.beginPath();g.arc(0,0,R*i/4,0,7);g.stroke()}g.beginPath();g.moveTo(-R,0);g.lineTo(R,0);g.moveTo(0,-R);g.lineTo(0,R);g.stroke();
+const a=t/800%(Math.PI*2),gr=g.createConicGradient?g.createConicGradient(a-.9,0,0):null;if(gr){gr.addColorStop(0,'rgba(34,228,255,0)');gr.addColorStop(.14,'rgba(34,228,255,.35)');gr.addColorStop(.15,'rgba(34,228,255,0)');g.fillStyle=gr;g.beginPath();g.arc(0,0,R,0,7);g.fill()}
+g.strokeStyle='#22e4ff';g.beginPath();g.moveTo(0,0);g.lineTo(Math.cos(a)*R,Math.sin(a)*R);g.stroke()}
+else{g.strokeStyle='rgba(139,92,255,.18)';const s=W*.12*Z;for(let x=-W;x<W;x+=s){g.beginPath();g.moveTo(x,-W);g.lineTo(x,W);g.moveTo(-W,x);g.lineTo(W,x);g.stroke()}g.strokeStyle='rgba(34,228,255,.25)';g.lineWidth=6;g.beginPath();g.moveTo(-W,0);g.lineTo(W,0);g.moveTo(0,-W);g.lineTo(0,W);g.stroke();g.lineWidth=1}
+list().forEach(d=>{if(d.self)return;const[x,y0]=pos(d,R),y=y0+Math.sin(t/600+H(d.ip))*3,m=meta(d);g.globalAlpha=d.miss>=3?.3:1;
+if(id=='mc'){g.strokeStyle=m.c+'88';g.beginPath();g.moveTo(0,0);g.lineTo(x,y);g.stroke()}else{g.fillStyle=m.c;g.shadowColor=m.c;g.shadowBlur=12;g.beginPath();g.arc(x,y+8,3,0,7);g.fill();g.shadowBlur=0}
+dstick(g,x,y,W*.055,m.c,m.v);g.fillStyle='#b8d4ea';g.font=W*.028+'px system-ui';g.fillText(d.ip.split('.').pop(),x+W*.03,y);g.globalAlpha=1});
+g.fillStyle='#4dffa6';g.shadowColor='#4dffa6';g.shadowBlur=16;g.beginPath();g.arc(0,0,W*.014,0,7);g.fill();g.restore()}
+$('#mc').onclick=e=>{const c=$('#mc'),r=c.getBoundingClientRect(),k=c.width/r.width,x=(e.clientX-r.left)*k-c.width/2,y=(e.clientY-r.top)*k-c.width/2;let best=null,bd=c.width*.08;
+list().forEach(d=>{if(d.self)return;const[px,py]=pos(d,c.width/2*.92*Z),dd=Math.hypot(px-x,py-y);if(dd<bd){bd=dd;best=d}});if(best)pick(best.ip)};
+requestAnimationFrame(frame);show(0);if(A)A.wifiInfo();
+</script></body></html>
